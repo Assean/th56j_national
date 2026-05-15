@@ -13,7 +13,8 @@
         </div>
         <div class="article-excerpt">有好好的遊戲......</div>
         <div class='text-right'>
-            <a href="./front/modal/home.php" class="article-readmore btn btn-outline-primary btn-sm">More</a>
+            <!-- More按鈕 -->
+            <a href="" class="article-readmore btn btn-outline-primary btn-sm">More</a>
         </div>
     </article>
     <?php endfor;?>
@@ -46,6 +47,28 @@
             
             sections.forEach(sec => {
                 sec.style.display = (sec.getAttribute('date-btn') === targetName) ? 'block' : 'none';
+            });
+        });
+    });
+    
+        $(".article-readmore").on("click", function(e) {
+        e.preventDefault(); // 阻擋 <a> 標籤預設的重整行為
+        
+        const $a = $(this);
+        $.get("./front/modal/home.php", (modal) => {
+            
+            // [關鍵修復 1] 移除畫面上可能殘留的舊 Modal，避免多次點擊產生一堆重複的 DOM 垃圾
+            $("#article").remove(); 
+            
+            // [關鍵修復 2] 將取回來的「整包完整 Modal 結構」直接附加到網頁的 body 最底部
+            $("body").append(modal);
+            
+            // 顯示 Modal
+            $("#article").modal("show");
+            
+            // 綁定關閉事件，避免重複觸發 focus
+            $("#article").off("hide.bs.modal").on("hide.bs.modal", function(){
+                $a.focus();
             });
         });
     });

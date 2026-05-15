@@ -31,7 +31,7 @@
         <?php } else { ?>
             <div class="user-badge">
                 <a href="javascript:loadpage('./front/profile.php')" class="btn btn-success mx-2 profile-link">個人頁面入口</a>
-                <a href="javascript:loadpage('./front/logout.php')" class="btn btn-success mx-2 logout-link">登出</a>
+                <a href="javascript:loadpage('./api/logout.php')" class="btn btn-success mx-2 logout-link">登出</a>
             </div>
         <?php } ?>
     </header>
