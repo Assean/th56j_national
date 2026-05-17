@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>反應力測試</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 16px 0 6px;
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+      color: #a0d8ef;
+    }
+    .desc { color: #888; font-size: .85rem; margin-bottom: 18px; }
+
+    /* 反應區 */
+    #arena {
+      width: 340px;
+      height: 220px;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.5);
+      margin-bottom: 20px;
+    }
+    #arena.waiting  { background: #16213e; color: #555; border: 2px dashed #334; }
+    #arena.ready    { background: #e74c3c; color: #fff; animation: pulse .4s infinite alternate; }
+    #arena.go       { background: #27ae60; color: #fff; }
+    #arena.toosoon  { background: #e67e22; color: #fff; }
+    #arena.done     { background: #2c3e50; color: #a0d8ef; cursor: default; }
+
+    @keyframes pulse { from { opacity:.85; } to { opacity:1; } }
+
+    /* 進度圓點 */
+    .dots {
+      display: flex; gap: 10px; margin-bottom: 18px;
+    }
+    .dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #334;
+      transition: background .3s;
+    }
+    .dot.done-ok   { background: #27ae60; }
+    .dot.done-fail { background: #e74c3c; }
+    .dot.active    { background: #f1c40f; box-shadow: 0 0 6px #f1c40f; }
+
+    /* 成績列表 */
+    #results-list {
+      width: 340px;
+      background: #16213e;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      min-height: 44px;
+    }
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid #223;
+      font-size: .9rem;
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-row .lbl { color: #888; }
+    .result-row .val { color: #a0d8ef; font-weight: 700; }
+    .result-row .val.fail { color: #e74c3c; }
+
+    #avg-block {
+      width: 340px;
+      background: #16213e;
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-bottom: 18px;
+      display: none;
+      text-align: center;
+    }
+    #avg-block .avg-label { color: #888; font-size: .85rem; }
+    #avg-block .avg-val   { font-size: 2rem; font-weight: 800; color: #2ecc71; margin: 4px 0; }
+    #avg-block .avg-rank  { font-size: .85rem; color: #f1c40f; }
+
+    #btn-start {
+      padding: 12px 36px;
+      background: linear-gradient(135deg,#3498db,#2980b9);
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 1px;
+      box-shadow: 0 3px 12px rgba(52,152,219,.4);
+      transition: transform .15s, box-shadow .15s;
+    }
+    #btn-start:hover { transform: translateY(-2px); box-shadow: 0 5px 18px rgba(52,152,219,.5); }
+    #btn-start:disabled { background: #334; color: #556; cursor: default; transform: none; box-shadow: none; }
+  </style>
+</head>
+<body>
+
+<h1>⚡ 反應力測試</h1>
+<p class="desc">共 5 回合・畫面變綠立即點擊・測試平均反應時間</p>
+
+<div class="dots" id="dots"></div>
+
+<div id="arena" class="waiting">點擊「開始」準備</div>
+
+<div id="results-list"></div>
+<div id="avg-block">
+  <div class="avg-label">平均反應時間</div>
+  <div class="avg-val" id="avg-val">—</div>
+  <div class="avg-rank" id="avg-rank"></div>
+</div>
+
+<button id="btn-start">開始遊戲</button>
+
+<script>
+  const ROUNDS = 5;
+  const arena      = document.getElementById('arena');
+  const dotsEl     = document.getElementById('dots');
+  const resultList = document.getElementById('results-list');
+  const avgBlock   = document.getElementById('avg-block');
+  const avgValEl   = document.getElementById('avg-val');
+  const avgRankEl  = document.getElementById('avg-rank');
+  const btnStart   = document.getElementById('btn-start');
+
+  let round = 0, times = [], waitTimer = null, goTime = null, state = 'idle';
+
+  // 建立進度點
+  function buildDots() {
+    dotsEl.innerHTML = '';
+    for (let i = 0; i < ROUNDS; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot';
+      d.id = `dot-${i}`;
+      dotsEl.appendChild(d);
+    }
+  }
+
+  function setDot(i, cls) {
+    const d = document.getElementById(`dot-${i}`);
+    if (d) d.className = `dot ${cls}`;
+  }
+
+  function addResultRow(round, ms, failed) {
+    const row = document.createElement('div');
+    row.className = 'result-row';
+    row.innerHTML = `<span class="lbl">第 ${round} 回合</span>
+      <span class="val ${failed ? 'fail' : ''}">${failed ? '太早點擊！' : ms + ' ms'}</span>`;
+    resultList.appendChild(row);
+  }
+
+  function rankMsg(avg) {
+    if (avg < 180) return '🏆 超人反應！頂尖電競等級';
+    if (avg < 230) return '🥇 優秀！超越大多數玩家';
+    if (avg < 300) return '🥈 良好・一般人的水準';
+    if (avg < 400) return '🥉 普通・多練習就能進步';
+    return '💪 繼續加油！';
+  }
+
+  function sendResultToParent(result, score) {
+    if (window.opener) {
+      window.opener.receiveGameResult({
+        game: '反應力測試',
+        data: { result, score }
+      });
+      window.close();
+    } else {
+      console.warn('無法傳送結果，請確認是否由主頁面開啟');
+    }
+  }
+
+  function startRound() {
+    if (round >= ROUNDS) { showFinal(); return; }
+    state = 'waiting';
+    setDot(round, 'active');
+    arena.className = 'ready';
+    arena.textContent = '⚠️ 等待…不要太早點！';
+
+    const delay = 1500 + Math.random() * 2500;
+    waitTimer = setTimeout(() => {
+      state = 'go';
+      arena.className = 'go';
+      arena.textContent = '🟢 點！！！';
+      goTime = performance.now();
+    }, delay);
+  }
+
+  arena.addEventListener('click', () => {
+    if (state === 'idle') return;
+
+    if (state === 'waiting') {
+      // 太早
+      clearTimeout(waitTimer);
+      arena.className = 'toosoon';
+      arena.textContent = '😬 太早了！';
+      setDot(round, 'done-fail');
+      addResultRow(round + 1, 0, true);
+      times.push(null);
+      round++;
+      state = 'idle';
+      setTimeout(startRound, 1200);
+      return;
+    }
+
+    if (state === 'go') {
+      const ms = Math.round(performance.now() - goTime);
+      times.push(ms);
+      setDot(round, 'done-ok');
+      addResultRow(round + 1, ms, false);
+      arena.className = 'waiting';
+      arena.textContent = `✅ ${ms} ms！`;
+      round++;
+      state = 'idle';
+      setTimeout(startRound, 900);
+    }
+  });
+
+  function showFinal() {
+    state = 'done';
+    const valid = times.filter(t => t !== null);
+    arena.className = 'done';
+    if (valid.length === 0) {
+      arena.textContent = '所有回合皆失敗 😅';
+      avgBlock.style.display = 'block';
+      avgValEl.textContent = '—';
+      avgRankEl.textContent = '請再試一次！';
+      sendResultToParent('失敗', '—');
+    } else {
+      const avg = Math.round(valid.reduce((a, b) => a + b, 0) / valid.length);
+      arena.textContent = `完成！平均 ${avg} ms`;
+      avgBlock.style.display = 'block';
+      avgValEl.textContent = avg + ' ms';
+      avgRankEl.textContent = rankMsg(avg);
+      sendResultToParent('完成', avg + ' ms');
+    }
+    btnStart.textContent = '再玩一次';
+    btnStart.disabled = false;
+  }
+
+  btnStart.addEventListener('click', () => {
+    round = 0; times = []; state = 'idle';
+    resultList.innerHTML = '';
+    avgBlock.style.display = 'none';
+    arena.className = 'waiting';
+    arena.textContent = '準備好了嗎…';
+    btnStart.disabled = true;
+    buildDots();
+    setTimeout(startRound, 800);
+  });
+
+  buildDots();
+</script>
+</body>
+</html>
