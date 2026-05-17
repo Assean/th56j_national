@@ -1,7 +1,14 @@
+<?php 
+    include "../api/db.php";
+    // 修正：$_SESWSION -> $_SESSION
+    $user=$pdo->query("SELECT * FROM `users` WHERE `username`='{$_SESSION['user']}'")->fetch();
+    $userHeader=(!empty($user['header']))?"./img/{$user['header']}":"./img/default_header.jpg";
+?>
 <div id="profile-page">
     <section class="profile-header w-100 p-3 border rounded mb-2 text-center">
         <label for="header">
-            <img src="./img/user_01.jpg" class="profile-avater" style="width:128px;">
+            <!-- 修正：使用變量 $userHeader 而不是寫死的路徑 -->
+            <img src="<?= $userHeader ?>" class="profile-avater" style="width:128px;">
             <!-- <input type="file" name="header" id="header" hidden> -->
             <input type="file" name="header" id="header" style="display:none">
         </label>
@@ -56,7 +63,13 @@
             reader.onload=function(e){
                 let imgString=e.target.result;
                 console.log(imgString)
-                $(".profile-avater").attr("src",imgString);
+                $.post("./api/update_avatar.php",{imgString},function(res){
+                    if(parseInt(res)){
+                        $(".profile-avater").attr("src",imgString);
+                    }else{
+                        alert("頭像上傳失敗")
+                    }
+                })
             }
             reader.readAsDataURL(file)
             console.log(this.files[0])
