@@ -2,8 +2,8 @@
     <div class="friend-search-section border rounded p-3 ">
         <form action="" class="friend-search-form form-group d-flex align-items-center">
             <label for="" class='mx-2'>搜尋使用者</label>
-            <input type="text" class="search-input form-control col-md-7">
-            <button class="search-submit-button btn btn-primary mx-2">尋找</button>
+            <input type="text" name='search' id='search' class="search-input form-control col-md-7">
+            <button type='button' class="search-submit-button btn btn-primary mx-2">尋找</button>
         </form>
         <div class="search-result-list my-2">
             <div class="search-result-item d-flex justify-content-between my-1 col-md-10">
@@ -16,6 +16,18 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(".search-submit-button").on("click",function(){
+            let search=$("#search").val();
+            console.log(search)
+            $.get("./api/search_users.php",{search},function(friends){
+                console.log(friends)
+                $(".search-result-list").html(friends)
+            })
+        })
+    </script>
+
     <div class="friend-list-section w-100 border rounded p-3 my-2">
         <h3 class="section-title text-center">好友列表</h3>
         <div class="d-flex flex-wrap p-3">
