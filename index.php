@@ -30,7 +30,7 @@
             </div>
         <?php } else { ?>
             <div class="user-badge">
-                <a href="javascript:loadpage('./front/profile.php')" class="btn btn-success mx-2 profile-link">個人頁面入口</a>
+                <a href="javascript:loadpage('./front/profile-page.php')" class="btn btn-success mx-2 profile-link">個人頁面入口</a>
                 <!-- 登入(logout)，沒有使用AJAX -->
                 <a href="./api/logout.php" class="btn btn-success mx-2 logout-link">登出</a>
             </div>
