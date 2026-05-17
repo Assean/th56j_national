@@ -12,13 +12,38 @@
             <!-- <input type="file" name="header" id="header" hidden> -->
             <input type="file" name="header" id="header" style="display:none">
         </label>
-        <div class="profile-username">username</div>
-        <div class="profile-bio m-auto col-md-8 form-group">
-            <textarea name="" id="" class="profile-bio-input w-100 form-control">
-                簡介
-            </textarea>
+        <div class="profile-username"><?=$_SESSION['user']?></div>
+        <div class="profile-bio m-auto col-md-8 form-group border rounded bg-info text-white p-2">
+            <span class="show-bio"><?=($user['bio']!=='')?$user['bio']:'尚未填寫自我介紹';?></span>
+            <input type='text' name="bio" id="bio" class="profile-bio-input w-100 form-control" value="" style="display:none">
         </div>
     </section>
+<script>
+
+    $(".show-bio").on("click",function(){
+        let bioText=($(".show-bio").text()!=="尚未填寫自我介紹")?$(".show-bio").text():'';
+        $(".profile-bio-input").val(bioText);
+        $(".show-bio,.profile-bio-input").toggle();
+    });
+
+    $(".profile-bio-input").on("keydown",function(e){
+        if(e.key==='Enter'){
+            let text=$(".profile-bio-input").val();
+            if(text==$(".show-bio").text()){
+                alert("簡介文字沒有修改")
+            }else{
+                $.post("./api/update_bio.php",{text},function(res){
+                    if(parseInt(res)){
+                        $(".show-bio").text(text).show();
+                        $(".profile-bio-input").hide();
+                    }else{
+                        alert('簡介更新失敗');
+                    }
+                })
+            }
+        }
+    })
+</script>
 
     <a href="" class="new-post-link">發表文章</a>
     
