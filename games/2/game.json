@@ -1,0 +1,12 @@
+{
+  "entry": {
+    "url": "games/2/index.html"
+  },
+  "score": {
+    "pullUrl": "games/2/api/pull_score.php",
+    "columns": [
+      "玩家名稱",
+      "分數"
+    ]
+  }
+}
