@@ -7,7 +7,7 @@ $search=$_GET['search'];
  //echo json_encode($users);
 
 foreach($users as $idx => $user){
-    if($user['username']===$_SESSION['user']){
+    if($user['username']===$_SESSION['num']){
         unset($users[$idx]);
     }
 }
@@ -32,4 +32,3 @@ else:?>
 <?php
 endif;
 ?>
-    

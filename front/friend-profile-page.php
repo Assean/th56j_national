@@ -38,9 +38,50 @@ $userHeader=(!empty($friend['header']))?"./img/{$friend['header']}":"./img/defau
     </section>    
 </div>
 <div class="profile-friend-actions">
-    <button class="btn btn-primary">申請好友</button>
-    <button class="btn btn-success">接受好友</button>
-    <button class="btn btn-warning">拒絕好友</button>
-    <button class="btn btn-danger">取消好友</button>
+    <?php 
+    /**
+     * 使用者ID
+     * 1.關係 relation
+     * 2.狀態 status
+     *   等待中
+     *    己接受
+     * 3.已是好友
+     */
+    $my=$_SESSION['user_id'];
+    $relation=$pdo->query("select * from `friends` where 
+                            (`requester_id`='$my' AND `addressee_id`='{$friend['id']}') OR 
+                            (`requester_id`='{$friend['id']}' AND `addressee_id`='$my')")->fetch();
+
+    $is_relation=(empty($relation))?false:true;
+    $is_requester=($is_relation && $relation['requester_id']=="$my" && $relation['status']=='pendding')?true:false;                    
+    $is_addressee=($is_relation && $relation['addressee_id']=="$my" && $relation['status']=='pendding')?true:false;
+    $is_friend=($is_relation && $relation['status']=='accept')?true:false;
+
+    ?>
+    <?php if(!$is_relation):;?>
+    <button class="btn btn-primary" onclick="setFriend('apply',<?=$friend['id'];?>)">申請好友</button>
+    <?php elseif($is_requester):;?>
+    <button class="btn btn-primary" onclick="setFriend('cancel',<?=$friend['id'];?>)">取消申請好友</button>
+    <?php elseif($is_addressee):;?>
+    <button class="btn btn-success" onclick="setFriend('accept',<?=$friend['id'];?>)">接受好友</button>
+    <button class="btn btn-warning" onclick="setFriend('reject',<?=$friend['id'];?>)">拒絕好友</button>
+    <?php elseif($is_friend):;?>
+    <button class="btn btn-danger" onclick="setFriend('remove',<?=$friend['id'];?>)">取消好友</button>
+    <?php endif;?>
 </div>
 </div>
+
+
+<script>
+function setFriend(action,friend_id){
+ $.get("./api/set_friend.php",{action,friend_id},function(res){
+    //console.log(res)
+    if(res.success){
+        alert(res.message)
+        loadpage(`./front/friend-profile-page.php?id=${friend_id}`);
+    }else{
+        alert("操作失敗")
+    }
+ })
+}
+</script>
