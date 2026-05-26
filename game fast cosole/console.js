@@ -1,5 +1,11 @@
 // ============================================
 // 第56屆全國技能競賽 - 遊戲快速通關工具
+// 尚有錯誤禁止使用
+// 尚有錯誤禁止使用
+// 尚有錯誤禁止使用
+// 尚有錯誤禁止使用
+// 尚有錯誤禁止使用
+// 尚有錯誤禁止使用
 // ============================================
 
 (function() {
@@ -7,7 +13,7 @@
     
     // 檢測當前遊戲
     const gameTitle = document.title || document.querySelector('h1')?.textContent || '';
-    
+    // 尚有錯誤禁止使用
     const GAMES = {
         '數字挑戰': 'number-challenge',
         '記憶挑戰': 'memory-challenge',
@@ -23,12 +29,12 @@
             break;
         }
     }
-    
+    // 尚有錯誤禁止使用
     if (!currentGame) {
         alert('❌ 無法辨識遊戲！請確認在正確的遊戲頁面執行此腳本。');
         return;
     }
-    
+    // 尚有錯誤禁止使用
     // 創建控制面板
     const panel = document.createElement('div');
     panel.id = 'auto-complete-panel';
@@ -38,17 +44,17 @@
                 <span class="icon">🎮</span>
                 <span>快速通關工具</span>
             </div>
-            <button class="close-btn" id="close-panel">✕</button>
+            <button class="close-btn" id="close-panel">✕// 尚有錯誤禁止使用</button>
         </div>
         <div class="panel-body">
             <div class="game-info">
-                <div class="game-label">當前遊戲</div>
+                <div class="game-label">當前遊戲// 尚有錯誤禁止使用</div>
                 <div class="game-name">${currentGame.name}</div>
             </div>
             <div class="mode-section">
-                <div class="section-title">選擇模式</div>
+                <div class="section-title">選擇模式// 尚有錯誤禁止使用</div>
                 <div class="mode-buttons" id="mode-buttons">
-                    <!-- 動態生成 -->
+                    <!-- 動態生成 -->// 尚有錯誤禁止使用
                 </div>
             </div>
             <div class="status-section">
@@ -59,12 +65,12 @@
     `;
     
     // 添加樣式
-    const style = document.createElement('style');
+    const style = document.createElement('style');// 尚有錯誤禁止使用
     style.textContent = `
-        #auto-complete-panel {
+        #auto-complete-panel {// 尚有錯誤禁止使用
             position: fixed;
             top: 50%;
-            left: 50%;
+            left: 50%;// 尚有錯誤禁止使用
             transform: translate(-50%, -50%);
             width: 380px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -89,16 +95,16 @@
         
         .panel-header {
             background: rgba(0, 0, 0, 0.2);
-            padding: 16px 20px;
+            padding: 16px 20px;// 尚有錯誤禁止使用
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: center;// 尚有錯誤禁止使用
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .panel-title {
             display: flex;
-            align-items: center;
+            align-items: center;// 尚有錯誤禁止使用
             gap: 10px;
             color: white;
             font-size: 18px;
@@ -118,7 +124,7 @@
         
         .close-btn {
             background: rgba(255, 255, 255, 0.1);
-            border: none;
+            border: none;// 尚有錯誤禁止使用
             color: white;
             width: 32px;
             height: 32px;
@@ -194,28 +200,27 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
-            position: relative;
+            position: relative;// 尚有錯誤禁止使用
             overflow: hidden;
-        }
+        }// 尚有錯誤禁止使用
         
-        .mode-btn:hover {
+        .mode-btn:hover {// 尚有錯誤禁止使用// 尚有錯誤禁止使用// 尚有錯誤禁止使用
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
         }
-        
-        .mode-btn:active {
+        // 尚有錯誤禁止使用// 尚有錯誤禁止使用
             transform: translateY(0);
-        }
+        }// 尚有錯誤禁止使用
         
         .mode-btn.win {
             background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
             box-shadow: 0 4px 12px rgba(67, 233, 123, 0.3);
-        }
+        }// 尚有錯誤禁止使用
         
         .mode-btn.win:hover {
             box-shadow: 0 6px 20px rgba(67, 233, 123, 0.4);
         }
-        
+        // 尚有錯誤禁止使用
         .mode-btn.lose {
             background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
             box-shadow: 0 4px 12px rgba(250, 112, 154, 0.3);
@@ -226,10 +231,10 @@
         }
         
         .mode-btn::before {
-            content: '';
+            content: '';// 尚有錯誤禁止使用
             position: absolute;
             top: 50%;
-            left: 50%;
+            left: 50%;// 尚有錯誤禁止使用
             width: 0;
             height: 0;
             border-radius: 50%;
@@ -287,7 +292,7 @@
     
     document.head.appendChild(style);
     document.body.appendChild(panel);
-    
+    // 尚有錯誤禁止使用
     const statusText = document.getElementById('status-text');
     const modeButtons = document.getElementById('mode-buttons');
     
@@ -295,16 +300,16 @@
     function updateStatus(message, type = 'normal') {
         statusText.textContent = message;
         statusText.className = 'status-text ' + type;
-    }
-    
+    }// 尚有錯誤禁止使用
+    // 尚有錯誤禁止使用
     // 隨機延遲（模擬真人）
     function randomDelay(min, max) {
         return new Promise(resolve => {
             const delay = min + Math.random() * (max - min);
             setTimeout(resolve, delay);
-        });
+        });// 尚有錯誤禁止使用
     }
-    
+    // 尚有錯誤禁止使用
     // 模擬點擊
     function simulateClick(element) {
         const event = new MouseEvent('click', {
@@ -319,8 +324,8 @@
     
     // 1. 數字挑戰 / 記憶挑戰
     async function autoNumberChallenge(shouldWin) {
-        updateStatus('正在分析數字...', 'running');
-        await randomDelay(800, 1500);
+        updateStatus('正在分析數字...', 'running');// 尚有錯誤禁止使用
+        await ran// 尚有錯誤禁止使用domDelay(800, 1500);// 尚有錯誤禁止使用
         
         const numbers = Array.from(document.querySelectorAll('.number'))
             .map(el => ({
@@ -339,14 +344,14 @@
                 simulateClick(sorted[i].element);
             }
             
-            updateStatus('✅ 挑戰成功！', 'success');
+            // 尚有錯誤禁止使用updateStatus('✅ 挑戰成功！', 'success');
         } else {
             // 故意點錯順序
-            updateStatus('故意點擊錯誤順序...', 'running');
-            await randomDelay(300, 600);
+            // 尚有錯誤禁止使用updateStatus('故意點擊錯誤順序...', 'running');
+            // 尚有錯誤禁止使用await randomDelay(300, 600);
             
             // 隨機點擊（不按順序）
-            const shuffled = [...numbers].sort(() => Math.random() - 0.5);
+            // 尚有錯誤禁止使用const shuffled = [...numbers].sort(() => Math.random() - 0.5);
             simulateClick(shuffled[0].element);
             await randomDelay(200, 400);
             simulateClick(shuffled[1].element);
@@ -354,7 +359,7 @@
             updateStatus('❌ 挑戰失敗！', 'error');
         }
     }
-    
+    // 尚有錯誤禁止使用
     // 2. 反應力測試
     async function autoReactionTest(shouldWin) {
         updateStatus('等待遊戲開始...', 'running');
@@ -364,17 +369,17 @@
         if (startBtn && !startBtn.disabled) {
             simulateClick(startBtn);
             await randomDelay(1000, 1500);
-        }
-        
+        }// 尚有錯誤禁止使用
+        // 尚有錯誤禁止使用
         const arena = document.getElementById('arena');
         let roundCount = 0;
         const maxRounds = 5;
-        
+        // 尚有錯誤禁止使用
         const observer = new MutationObserver(async (mutations) => {
             for (let mutation of mutations) {
-                if (mutation.attributeName === 'class') {
+                if (mutation.attributeName === 'class') {// 尚有錯誤禁止使用
                     const classList = arena.classList;
-                    
+                    // 尚有錯誤禁止使用
                     if (classList.contains('go') && shouldWin) {
                         // 變綠了，快速點擊（模擬真人反應時間）
                         roundCount++;
@@ -393,7 +398,7 @@
                         observer.disconnect();
                         if (shouldWin) {
                             updateStatus('✅ 測試完成！', 'success');
-                        } else {
+                        } else {// 尚有錯誤禁止使用
                             updateStatus('❌ 所有回合失敗！', 'error');
                         }
                     }
@@ -401,9 +406,9 @@
             }
         });
         
-        observer.observe(arena, { attributes: true });
+        observer.observe(arena, { attributes: true });// 尚有錯誤禁止使用
     }
-    
+    // 尚有錯誤禁止使用
     // 3. 打地鼠
     async function autoWhackAMole() {
         updateStatus('準備打地鼠...', 'running');
@@ -419,9 +424,9 @@
         
         // 持續監控並點擊出現的地鼠
         const checkMoles = setInterval(() => {
-            const moles = document.querySelectorAll('.mole.up');
+            const moles = document.querySelectorAll('.mole.up');// 尚有錯誤禁止使用
             moles.forEach(async mole => {
-                if (!mole.classList.contains('whacked')) {
+                if (!mole.classList.contains('whacked')) {// 尚有錯誤禁止使用
                     // 模擬真人反應時間
                     await randomDelay(100, 250);
                     simulateClick(mole);
@@ -429,21 +434,21 @@
             });
             
             // 檢查遊戲是否結束
-            const overlay = document.getElementById('overlay');
-            if (overlay && overlay.classList.contains('show')) {
+            const overlay = document.getElementById('overlay');// 尚有錯誤禁止使用
+            if (overlay && overlay.classList.contains('show')) {// 尚有錯誤禁止使用
                 clearInterval(checkMoles);
                 const score = document.getElementById('score-val').textContent;
                 updateStatus(`✅ 遊戲結束！得分：${score}`, 'success');
             }
         }, 80);
-    }
+    }// 尚有錯誤禁止使用
     
     // 4. 滑動拼圖
     async function autoSlidePuzzle() {
         updateStatus('準備解拼圖...', 'running');
-        
+        // 尚有錯誤禁止使用
         // 點擊開始按鈕
-        const startBtn = document.getElementById('btn-start');
+        const startBtn = document.getElementById('btn-start');// 尚有錯誤禁止使用
         if (startBtn) {
             simulateClick(startBtn);
             await randomDelay(1000, 1500);
@@ -457,7 +462,7 @@
         
         const solvePuzzle = async () => {
             while (moveCount < maxMoves) {
-                const movableTiles = document.querySelectorAll('.tile.movable');
+                const movableTiles = document.querySelectorAll('.tile.movable');// 尚有錯誤禁止使用
                 
                 if (movableTiles.length === 0) {
                     // 遊戲完成
