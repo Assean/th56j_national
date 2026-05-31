@@ -32,7 +32,8 @@ $game_setting=json_decode(file_get_contents("../games/{$game['id']}/game.json"))
                 </div>
                 
                 <div id="leaderboard" class="list-group list-group-flush">
-                    </div>
+
+                </div>
             </div>
         </div>
     </aside>
@@ -41,6 +42,13 @@ $game_setting=json_decode(file_get_contents("../games/{$game['id']}/game.json"))
 <script>
     $.get("<?= $game_setting->score->pullUrl ?>",(ranks)=>{
         if(ranks.length>0){
+            let cols=`<div class="leaderboard-item list-group-item d-flex text-center">
+                            <div class="player-rank col-2">排名</div>
+                            <div class="player-name col-6"><?= $game_setting->score->columns[0]; ?></div>
+                            <div class="player-score col-2"><?= $game_setting->score->columns[1];?></div>
+                        </div>`
+                        $("#leaderboard").append(cols)
+
             ranks.forEach((item,idx)=>{
                 let badgeClass = "badge-secondary";
                 if(idx === 0) badgeClass = "badge-warning";      // 第一名
