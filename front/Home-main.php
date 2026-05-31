@@ -53,40 +53,20 @@
 </aside>
 
 <script>
-    // 使用 IIFE (立即執行函數) 建立獨立作用域，徹底避免變數名稱衝突
     (function() {
-        // 1. 預設初始狀態：隱藏公告區塊，並將第一個按鈕（文章）設為 active
         $('[data-btn="notifications"], [date-btn="notifications"]').hide();
         $('#content-tabs a').removeClass('active').eq(0).addClass('active');
 
-        // 2. 頁籤點擊切換邏輯 (先 off 再 on，防止 AJAX 重複綁定事件)
         $('#content-tabs a').off('click').on('click', function(e) {
             e.preventDefault();
             
-            // 切換按鈕的 active 樣式
             $('#content-tabs a').removeClass('active');
             $(this).addClass('active');
             
-            // 取得點擊的目標 (articles 或 notifications)
             var targetName = $(this).attr('data-target');
             
-            // 隱藏所有區塊，只顯示對應的目標區塊 (相容 data-btn 與 date-btn 屬性)
             $('[data-btn], [date-btn]').hide();
             $('[data-btn="' + targetName + '"], [date-btn="' + targetName + '"]').show();
         });
     })();
-
-    // 3. 閱讀更多 Modal 功能 (同樣加上 .off() 確保動態載入不失效)
-    $(".article-readmore").off("click").on("click", function(e) {
-        e.preventDefault();
-        var $a = $(this);
-        $.get("./front/modal/home.php", function(modal) {
-            $("#article").remove(); 
-            $("body").append(modal);
-            $("#article").modal("show");
-            $("#article").off("hide.bs.modal").on("hide.bs.modal", function(){
-                $a.focus();
-            });
-        });
-    });
 </script>

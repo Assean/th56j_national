@@ -8,7 +8,7 @@
     <section class="profile-header w-100 p-3 border rounded mb-2 text-center">
         <label for="header">
             <!-- 修正：使用變量 $userHeader 而不是寫死的路徑 -->
-            <img src="<?= $userHeader ?>" class="profile-avater" style="width:128px;">
+            <img src="<?= $userHeader ?>" class="profile-avatar" style="width:128px;">
             <!-- <input type="file" name="header" id="header" hidden> -->
             <input type="file" name="header" id="header" style="display:none">
         </label>
@@ -93,16 +93,16 @@
             let reader=new FileReader();
             reader.onload=function(e){
                 let imgString=e.target.result;
-                console.log(imgString)
+                // console.log(imgString)
                 $.post("./api/update_avatar.php",{imgString},function(res){
                     if(parseInt(res)){
-                        $(".profile-avater").attr("src",imgString);
+                        $(".profile-avatar").attr("src",imgString);
                     }else{
                         alert("頭像上傳失敗")
                     }
                 })
             }
             reader.readAsDataURL(file)
-            console.log(this.files[0])
+            // console.log(this.files[0])
         })
     </script>

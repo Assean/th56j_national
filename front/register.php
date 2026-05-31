@@ -31,7 +31,7 @@ $(".register-submit").on("click",function(){
              'email':$("#email").val()
             },
         function(res){
-            console.log(res)
+            // console.log(res)
             if(parseInt(res)){
                 loadpage("./front/login.php");
             }else{
