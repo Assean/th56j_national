@@ -1,0 +1,9 @@
+body{background:#f5f6fa}
+.navbar-brand img{border:2px solid rgba(255,255,255,.3)}
+#content{min-height:calc(100vh - 60px)}
+.card{transition:transform .2s,box-shadow .2s}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.12)!important}
+.article-item{transition:box-shadow .15s}
+.article-item:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)!important}
+.profile-avatar,.friend-avatar,.request-avatar{border-radius:50%;object-fit:cover;border:3px solid #dee2e6}
+.leaderboard-item:first-child{background:#fffbf0}

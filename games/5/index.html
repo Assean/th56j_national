@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>滑動拼圖</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(145deg, #0d1b2a, #1b2838);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px;
+      color: #e0e6f0;
+    }
+
+    h1 { font-size: 1.6rem; margin: 10px 0 4px; letter-spacing: 2px; color: #a0d8ef; }
+    .desc { color: #667; font-size: .83rem; margin-bottom: 16px; }
+
+    /* HUD */
+    .hud {
+      display: flex;
+      gap: 24px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 30px;
+      padding: 8px 24px;
+      margin-bottom: 18px;
+    }
+    .hud-item { display: flex; flex-direction: column; align-items: center; }
+    .hud-label { font-size: .62rem; color: #556; letter-spacing: 1px; text-transform: uppercase; }
+    .hud-val   { font-size: 1.4rem; font-weight: 800; }
+    #step-val  { color: #63b3ed; }
+    #time-val  { color: #68d391; }
+
+    /* 拼圖區 */
+    #puzzle {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 6px;
+      margin-bottom: 20px;
+      padding: 10px;
+      background: rgba(255,255,255,.04);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+
+    .tile {
+      width: 100px;
+      height: 100px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      transition: transform .1s ease, box-shadow .1s;
+      position: relative;
+      letter-spacing: -1px;
+    }
+    .tile:not(.empty):hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 16px rgba(160,216,239,.3);
+    }
+    .tile.movable { cursor: pointer; }
+    .tile.not-movable { cursor: default; }
+
+    /* 數字漸層色 */
+    .tile[data-n="1"] { background: linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
+    .tile[data-n="2"] { background: linear-gradient(135deg,#f093fb,#f5576c); color:#fff; }
+    .tile[data-n="3"] { background: linear-gradient(135deg,#4facfe,#00f2fe); color:#fff; }
+    .tile[data-n="4"] { background: linear-gradient(135deg,#43e97b,#38f9d7); color:#fff; }
+    .tile[data-n="5"] { background: linear-gradient(135deg,#fa709a,#fee140); color:#fff; }
+    .tile[data-n="6"] { background: linear-gradient(135deg,#a18cd1,#fbc2eb); color:#fff; }
+    .tile[data-n="7"] { background: linear-gradient(135deg,#fccb90,#d57eeb); color:#fff; }
+    .tile[data-n="8"] { background: linear-gradient(135deg,#a1c4fd,#c2e9fb); color:#1a1a2e; }
+    .tile.empty       { background: rgba(255,255,255,.04); cursor: default; border: 2px dashed rgba(255,255,255,.08); }
+
+    .tile.slide-anim {
+      animation: slidePop .12s ease;
+    }
+    @keyframes slidePop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    /* 完成標記 */
+    .tile.correct::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      border: 3px solid rgba(105,219,124,.6);
+      pointer-events: none;
+    }
+
+    /* 按鈕群 */
+    .btns { display: flex; gap: 12px; margin-bottom: 16px; }
+    .btn {
+      padding: 10px 28px;
+      border: none;
+      border-radius: 30px;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .15s;
+      letter-spacing: .5px;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: linear-gradient(135deg,#63b3ed,#4299e1); color:#fff; box-shadow: 0 4px 14px rgba(99,179,237,.35); }
+    .btn-secondary { background: rgba(255,255,255,.08); color:#a0b4c8; border: 1px solid rgba(255,255,255,.1); }
+
+    /* 完成覆蓋層 */
+    #overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #overlay.show { display: flex; }
+    .result-box {
+      background: #0d1b2a;
+      border: 1px solid rgba(160,216,239,.3);
+      border-radius: 24px;
+      padding: 36px 44px;
+      text-align: center;
+      box-shadow: 0 12px 48px rgba(0,0,0,.7);
+      min-width: 280px;
+    }
+    .result-box h2 { font-size: 1.8rem; margin-bottom: 10px; color: #a0d8ef; }
+    .result-nums {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      margin: 16px 0 10px;
+    }
+    .r-num { display: flex; flex-direction: column; align-items: center; }
+    .r-num .big  { font-size: 2.2rem; font-weight: 900; }
+    .r-num .sml  { font-size: .72rem; color: #667; text-transform: uppercase; letter-spacing: 1px; }
+    .r-steps { color: #63b3ed; }
+    .r-time  { color: #68d391; }
+    .r-rank  { font-size: 1.05rem; color: #f6e05e; margin-bottom: 22px; }
+    .result-btns { display: flex; gap: 10px; justify-content: center; }
+    .result-btns .btn { padding: 9px 24px; font-size: .88rem; }
+  </style>
+</head>
+<body>
+
+<h1>🧩 滑動拼圖</h1>
+<p class="desc">點擊可移動的方塊，讓數字 1～8 按順序排列</p>
+
+<div class="hud">
+  <div class="hud-item">
+    <span class="hud-label">步數</span>
+    <span class="hud-val" id="step-val">0</span>
+  </div>
+  <div class="hud-item">
+    <span class="hud-label">時間</span>
+    <span class="hud-val" id="time-val">0s</span>
+  </div>
+</div>
+
+<div id="puzzle"></div>
+
+<div class="btns">
+  <button class="btn btn-primary" id="btn-start">開始 / 重新打亂</button>
+  <button class="btn btn-secondary" id="btn-hint">💡 提示可移動</button>
+</div>
+
+<div id="overlay">
+  <div class="result-box">
+    <h2>🎉 完成！</h2>
+    <div class="result-nums">
+      <div class="r-num r-steps">
+        <span class="big" id="res-steps">0</span>
+        <span class="sml">步數</span>
+      </div>
+      <div class="r-num r-time">
+        <span class="big" id="res-time">0s</span>
+        <span class="sml">時間</span>
+      </div>
+    </div>
+    <div class="r-rank" id="res-rank"></div>
+    <div class="result-btns">
+      <button class="btn btn-primary" id="btn-again">再玩一次</button>
+      <button class="btn btn-secondary" id="btn-quit">結束</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const GOAL = [1,2,3,4,5,6,7,8,0]; // 0 = 空格
+
+  let board = [...GOAL];
+  let steps = 0, seconds = 0, timerInterval = null, running = false;
+
+  const puzzleEl  = document.getElementById('puzzle');
+  const stepValEl = document.getElementById('step-val');
+  const timeValEl = document.getElementById('time-val');
+  const overlay   = document.getElementById('overlay');
+  const resSteps  = document.getElementById('res-steps');
+  const resTime   = document.getElementById('res-time');
+  const resRank   = document.getElementById('res-rank');
+  const btnStart  = document.getElementById('btn-start');
+  const btnHint   = document.getElementById('btn-hint');
+  const btnAgain  = document.getElementById('btn-again');
+  const btnQuit   = document.getElementById('btn-quit');
+
+  // ── 亂數打亂（確保有解）─────────────────────────
+  function shuffle(arr) {
+    const a = [...arr];
+    // 從目標狀態做 200 次隨機合法移動
+    for (let i = 0; i < 200; i++) {
+      const empty = a.indexOf(0);
+      const neighbors = getMovable(a);
+      const pick = neighbors[Math.floor(Math.random() * neighbors.length)];
+      [a[empty], a[pick]] = [a[pick], a[empty]];
+    }
+    return a;
+  }
+
+  function getMovable(arr) {
+    const empty = arr.indexOf(0);
+    const row = Math.floor(empty / 3), col = empty % 3;
+    const dirs = [];
+    if (row > 0) dirs.push(empty - 3);
+    if (row < 2) dirs.push(empty + 3);
+    if (col > 0) dirs.push(empty - 1);
+    if (col < 2) dirs.push(empty + 1);
+    return dirs;
+  }
+
+  // ── 渲染 ─────────────────────────────────────────
+  function render(animIdx = -1) {
+    puzzleEl.innerHTML = '';
+    const movable = getMovable(board);
+    board.forEach((n, idx) => {
+      const tile = document.createElement('div');
+      tile.className = 'tile' + (n === 0 ? ' empty' : '');
+      if (n !== 0) {
+        tile.dataset.n = n;
+        tile.textContent = n;
+        if (n === GOAL[idx]) tile.classList.add('correct');
+        if (movable.includes(idx)) tile.classList.add('movable');
+        else tile.classList.add('not-movable');
+        if (idx === animIdx) tile.classList.add('slide-anim');
+        if (movable.includes(idx)) {
+          tile.addEventListener('click', () => moveTile(idx));
+        }
+      }
+      puzzleEl.appendChild(tile);
+    });
+  }
+
+  // ── 移動 ─────────────────────────────────────────
+  function moveTile(idx) {
+    if (!running) return;
+    const empty = board.indexOf(0);
+    const movable = getMovable(board);
+    if (!movable.includes(idx)) return;
+    [board[empty], board[idx]] = [board[idx], board[empty]];
+    steps++;
+    stepValEl.textContent = steps;
+    render(empty); // empty 位置現在是剛移過去的磚
+    if (isSolved()) endGame();
+  }
+
+  function isSolved() {
+    return board.every((n, i) => n === GOAL[i]);
+  }
+
+  // ── 計時 ─────────────────────────────────────────
+  function startTimer() {
+    clearInterval(timerInterval);
+    seconds = 0;
+    timerInterval = setInterval(() => {
+      seconds++;
+      timeValEl.textContent = seconds + 's';
+    }, 1000);
+  }
+
+  // ── 排名 ─────────────────────────────────────────
+  function rankMsg(s, t) {
+    if (s <= 20 && t <= 30) return '🏆 完美！大師等級';
+    if (s <= 35 && t <= 60) return '🥇 優秀！相當厲害';
+    if (s <= 60)            return '🥈 不錯！繼續練習';
+    return '💪 完成就是勝利！';
+  }
+
+  // ── 開始 ─────────────────────────────────────────
+  function startGame() {
+    board = shuffle(GOAL);
+    steps = 0;
+    running = true;
+    stepValEl.textContent = 0;
+    timeValEl.textContent = '0s';
+    overlay.classList.remove('show');
+    render();
+    startTimer();
+  }
+
+  // ── 結束 ─────────────────────────────────────────
+  function endGame() {
+    running = false;
+    clearInterval(timerInterval);
+    render(); // 最終狀態
+    resSteps.textContent = steps;
+    resTime.textContent  = seconds + 's';
+    resRank.textContent  = rankMsg(steps, seconds);
+    overlay.classList.add('show');
+    sendResultToParent('完成', steps + ' 步 / ' + seconds + ' 秒');
+  }
+
+  // ── 回傳 ─────────────────────────────────────────
+  function sendResultToParent(result, score) {
+    if (window.opener) {
+      window.opener.receiveGameResult({
+        game: '滑動拼圖',
+        data: { result, score }
+      });
+    } else {
+      console.warn('無法傳送結果，請確認是否由主頁面開啟');
+    }
+  }
+
+  // ── 提示 ─────────────────────────────────────────
+  btnHint.addEventListener('click', () => {
+    const tiles = puzzleEl.querySelectorAll('.tile.movable');
+    tiles.forEach(t => {
+      t.style.outline = '3px solid #f6e05e';
+      setTimeout(() => { t.style.outline = ''; }, 900);
+    });
+  });
+
+  // ── 按鈕綁定 ──────────────────────────────────────
+  btnStart.addEventListener('click', startGame);
+  btnAgain.addEventListener('click', startGame);
+  btnQuit.addEventListener('click', () => { overlay.classList.remove('show'); window.close(); });
+
+  // 初始顯示已排好的狀態
+  render();
+</script>
+</body>
+</html>
