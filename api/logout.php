@@ -1,4 +1,8 @@
-<?php include_once "db.php";
+<?php
+include_once "db.php";
 unset($_SESSION['user']);
-header("location:../index.php");
-?>
+unset($_SESSION['user_id']);
+unset($_SESSION['num']);
+session_destroy();
+header("Location: ../index.php");
+exit;

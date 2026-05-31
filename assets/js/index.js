@@ -1,1 +1,4 @@
-function loadpage(url="main"){$("#content").load(url)}
+// JS
+function loadpage(url="main"){
+    $("#content").load(url)
+}

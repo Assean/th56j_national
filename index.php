@@ -1,45 +1,60 @@
-<?php include_once "api/db.php"; ?>
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FunTech</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="./assets/css/index.css">
-<script src="assets/js/jquery-3.7.1.min.js"></script>
-<script src="assets/js/index.js"></script>
-</head>
-<body>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm sticky-top">
-  <a class="navbar-brand d-flex align-items-center" href="./index.php">
-    <img src="./assets/img/logo.png" alt="FunTech" width="36" height="36" class="rounded-circle mr-2" style="object-fit:cover">
-    <span class="font-weight-bold">FunTech</span>
-  </a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="mainNav">
-    <ul class="navbar-nav mx-auto">
-      <li class="nav-item"><a class="nav-link" href="javascript:loadpage('./front/Home-main.php')">🏠 首頁</a></li>
-      <li class="nav-item"><a class="nav-link" href="javascript:loadpage('./front/games.php')">🎮 遊戲</a></li>
-      <li class="nav-item"><a class="nav-link" href="javascript:loadpage('./front/friends-page.php')">👥 好友</a></li>
-    </ul>
-    <div class="d-flex">
-      <?php if (!isset($_SESSION['user'])): ?>
-        <a href="javascript:loadpage('./front/login.php')" class="btn btn-outline-light btn-sm mr-2">登入</a>
-        <a href="javascript:loadpage('./front/register.php')" class="btn btn-success btn-sm">註冊</a>
-      <?php else: ?>
-        <a href="javascript:loadpage('./front/profile-page.php')" class="btn btn-outline-light btn-sm mr-2">個人頁面</a>
-        <a href="./api/logout.php" class="btn btn-danger btn-sm">登出</a>
-      <?php endif; ?>
-    </div>
-  </div>
+<?php
+include_once "api/db.php";
+$base = "./";
+include_once "partials/header.php";
+
+// 決定目前顯示的分頁
+$tab = isset($_GET['tab']) ? $_GET['tab'] : 'articles';
+?>
+
+<nav id="content-tabs" class="d-flex justify-content-center mb-3">
+    <a href="index.php?tab=articles"
+       class="btn btn-outline-info mx-2 <?= $tab === 'articles' ? 'active' : '' ?>">文章</a>
+    <a href="index.php?tab=notifications"
+       class="btn btn-outline-info mx-2 <?= $tab === 'notifications' ? 'active' : '' ?>">公告</a>
 </nav>
-<div id="home" class="container-fluid px-0">
-  <div id="content" class="p-3"></div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>loadpage("./front/Home-main.php");</script>
-</body>
-</html>
+
+<?php if ($tab === 'articles'): ?>
+<section class="articles p-3 rounded my-3">
+    <h1 class="d-flex justify-content-center mb-4 mt-3">文章列表</h1>
+    <?php
+    $articles = $pdo->query("SELECT `articles`.*, `users`.`username`
+                              FROM `articles`
+                              LEFT JOIN `users` ON `articles`.`user_id` = `users`.`id`
+                              ORDER BY `articles`.`created_at` DESC
+                              LIMIT 10")->fetchAll();
+    if (count($articles) > 0):
+        foreach ($articles as $article):
+    ?>
+    <article class="article-item w-100 border rounded p-3 my-2">
+        <div class="d-flex justify-content-between">
+            <div class="article-title text-md bolder"><?= htmlspecialchars($article['title']) ?></div>
+            <time class="article-date text-sm"><?= date("Y-m-d H:i:s", strtotime($article['created_at'])) ?></time>
+        </div>
+        <div class="article-excerpt"><?= htmlspecialchars(mb_substr($article['content'], 0, 50)) ?>...</div>
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">by <?= htmlspecialchars($article['username'] ?? '未知作者') ?></small>
+            <a href="article.php?id=<?= $article['id'] ?>" class="article-readmore btn btn-outline-primary btn-sm">More</a>
+        </div>
+    </article>
+    <?php
+        endforeach;
+    else:
+    ?>
+    <div class="text-center text-muted p-4">目前尚無文章</div>
+    <?php endif; ?>
+</section>
+
+<?php else: ?>
+<aside class="notifications border m-3 p-3 rounded">
+    <h1 class="d-flex justify-content-center">公告事項</h1>
+    <?php for ($i = 1; $i < 6; $i++): ?>
+    <div class="notification-item border-bottom my-1 bg-gray-100 p-2 rounded">
+        <div class="notification-title text-lg p-2 m-2">公告事項：<?= $i ?></div>
+        <time class="notification-date"><?= date("Y-m-d H:i:s") ?></time>
+    </div>
+    <?php endfor; ?>
+</aside>
+<?php endif; ?>
+
+<?php include_once "partials/footer.php"; ?>
