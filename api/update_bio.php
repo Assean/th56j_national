@@ -1,3 +1,2 @@
 <?php include "db.php";
-$bio=$_POST['text'];
-echo $pdo->exec("UPDATE `users` SET `bio`='$bio' WHERE `username`='{$_SESSION['user']}'");
+echo $pdo->exec("UPDATE `users` SET `bio`='{$_POST['text']}' WHERE `username`='{$_SESSION['user']}'");

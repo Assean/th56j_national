@@ -1,106 +1,80 @@
 <?php
 include_once "../api/db.php";
-
-if(!isset($_SESSION['user'])){
-    echo "<script>";
-    echo "loadpage('./front/login.php')";
-    echo "</script>";
-}
-
+if(!isset($_SESSION['user'])){echo "<script>loadpage('front/login.php')</script>";return;}
+$my=$_SESSION['user_id'];
 ?>
-<div id="friends-page">
-    <div class="friend-search-section border rounded p-3 ">
-        <form action="" class="friend-search-form form-group d-flex align-items-center">
-            <label for="" class='mx-2'>搜尋使用者</label>
-            <input type="text" name='search' id='search' class="search-input form-control col-md-7">
-            <button type='button' class="search-submit-button btn btn-primary mx-2">尋找</button>
-        </form>
-        <div class="search-result-list my-2">
-             <div class="text-center">搜尋好友結果區</div>
+<div id="friends-page" class="py-4">
+  <div class="friend-search-section card shadow border-0 mb-4">
+    <div class="card-body">
+      <h5 class="font-weight-bold mb-3">🔍 搜尋使用者</h5>
+      <form class="friend-search-form">
+        <div class="input-group">
+          <input type="text" class="search-input form-control" placeholder="輸入帳號或名稱搜尋...">
+          <div class="input-group-append"><button class="search-submit-button btn btn-primary" type="button">搜尋</button></div>
         </div>
+      </form>
+      <div class="search-result-list mt-3"></div>
     </div>
-    <script>
-        $(".search-submit-button").on("click",function(){
-            let search=$("#search").val();
-            $.get("./api/search_users.php",{search},function(friends){
-                $(".search-result-list").html(friends)
-            })
-        })
-    </script>
-    <div class="friend-list-section w-100 border rounded p-3 my-2">
-        <h3 class="section-title text-center">好友列表</h3>
-        <div class="d-flex flex-wrap p-3">
-            <?php
-            $friends=$pdo->query("select * from `friends` 
-                                   where (`requester_id`='{$_SESSION['user_id']}' OR 
-                                          `addressee_id`='{$_SESSION['user_id']}') AND 
-                                          `status`='accept'")->fetchAll();
-            foreach($friends as $friend):
-                $friend_id=($friend['requester_id']==$_SESSION['user_id'])?$friend['addressee_id']:$friend['requester_id'];
-                $friend_info=$pdo->query("select * from `users` where `id`='$friend_id'")->fetch();
-            
-            ;?>
-            <div class="friend-item col-md-3 p-2 text-center" onclick="loadpage('./front/friend-profile-page.php?id=<?=$friend_id;?>')">
-                <img src="./img/<?=$friend_info['header'];?>" style="width:64px;" class="friend-avatar">
-                <div class="friend-name mx-3"><?=$friend_info['username'];?></div>
-            </div>
-            <?php endforeach ;?>
-        </div>
-    </div>
-    <div class="incoming-requests-section border rounded p-3 my-2 ">
-        <h3 class="section-title text-center">收到的好友申請</h3>
-        <div class="d-flex flex-wrap p-3">
-            <?php
-            $addressee=$pdo->query("select * from `friends` 
-                                   where  `addressee_id`='{$_SESSION['user_id']}' AND 
-                                          `status`='pending'")->fetchAll();
-            foreach($addressee as $addr):
-                $requester_id=$addr['requester_id'];
-                $requester_info=$pdo->query("select * from `users` where `id`='$requester_id'")->fetch();
-                
-                ;?>
-            <div class="request-item col-md-3 p-2 text-center">
-                <img src="./img/<?=$requester_info['header'];?>" style="width:64px;" class="request-avatar">
-                <div class="request-username"><?=$requester_info['username'];?></div>
-                <div>
-                    <button class="accept-request-button btn btn-success btn-sm" onclick="setFriend('accept',<?=$requester_id;?>)">接受好友</button>
-                    <button class="reject-request-button btn btn-warning btn-sm" onclick="setFriend('reject',<?=$requester_id;?>)">拒絕好友</button>
-                </div>
-            </div>
-            <?php endforeach;?>
-        </div>
-    </div>
-    <div class="sent-requests-section border rounded p-3 my-2">
-        <h3 class="section-title text-center">發送的好友申請</h3>
-        <div class="d-flex flex-wrap p-3">
-        <?php
-            $requesters=$pdo->query("select * from `friends` 
-                                   where  `requester_id`='{$_SESSION['user_id']}' AND 
-                                          `status`='pending'")->fetchAll();
-            foreach($requesters as $requester):
-                $addressee_id=$requester['addressee_id'];
-                $addressee_info=$pdo->query("select * from `users` where `id`='$addressee_id'")->fetch();
-                ;?>
-            <div class="request-item col-md-3 p-2 text-center">
-                <img src="./img/<?=$addressee_info['header'];?>" style="width:64px" class="request-avatar">
-                <div class="request-username"><?=$addressee_info['username'];?></div>
-                <button class="cancel-request-button btn btn-warning btn-sm" onclick="setFriend('cancel',<?=$addressee_info['id'];?>)">取消好友申請</button>
-            </div>
-            <?php endforeach;?>
-        </div>
-    </div>
-    
+  </div>
+
+  <div class="friend-list-section card shadow border-0 mb-4">
+    <div class="card-header bg-white border-bottom"><h5 class="section-title mb-0 font-weight-bold">👥 好友列表</h5></div>
+    <div class="card-body"><div class="row">
+      <?php
+      $friends=$pdo->query("SELECT * FROM `friends` WHERE (requester_id='$my' OR addressee_id='$my') AND status='accept'")->fetchAll();
+      foreach($friends as $f):
+        $fid=($f['requester_id']==$my)?$f['addressee_id']:$f['requester_id'];
+        $fi=$pdo->query("SELECT * FROM `users` WHERE id='$fid'")->fetch();?>
+      <div class="col-6 col-md-3 mb-3 text-center friend-item" style="cursor:pointer" onclick="loadpage('front/friend-profile-page.php?id=<?=$fid?>')">
+        <img src="img/<?=htmlspecialchars($fi['header'])?>" class="friend-avatar mb-1" style="width:64px;height:64px">
+        <div class="friend-name small font-weight-bold"><?=htmlspecialchars($fi['username'])?></div>
+      </div>
+      <?php endforeach;?>
+    </div></div>
+  </div>
+
+  <div class="incoming-requests-section card shadow border-0 mb-4">
+    <div class="card-header bg-white border-bottom"><h5 class="section-title mb-0 font-weight-bold">📥 收到的好友申請</h5></div>
+    <div class="card-body"><div class="row">
+      <?php
+      $incoming=$pdo->query("SELECT * FROM `friends` WHERE addressee_id='$my' AND status='pending'")->fetchAll();
+      foreach($incoming as $req):
+        $ri=$pdo->query("SELECT * FROM `users` WHERE id='{$req['requester_id']}'")->fetch();?>
+      <div class="col-6 col-md-3 mb-3 text-center request-item">
+        <img src="img/<?=htmlspecialchars($ri['header'])?>" class="request-avatar mb-1" style="width:64px;height:64px">
+        <div class="request-username small font-weight-bold mb-1"><?=htmlspecialchars($ri['username'])?></div>
+        <button class="accept-request-button btn btn-success btn-sm mr-1" onclick="setFriend('accept',<?=$req['requester_id']?>)">接受</button>
+        <button class="reject-request-button btn btn-outline-warning btn-sm" onclick="setFriend('reject',<?=$req['requester_id']?>)">拒絕</button>
+      </div>
+      <?php endforeach;?>
+    </div></div>
+  </div>
+
+  <div class="sent-requests-section card shadow border-0">
+    <div class="card-header bg-white border-bottom"><h5 class="section-title mb-0 font-weight-bold">📤 發送的好友申請</h5></div>
+    <div class="card-body"><div class="row">
+      <?php
+      $sent=$pdo->query("SELECT * FROM `friends` WHERE requester_id='$my' AND status='pending'")->fetchAll();
+      foreach($sent as $s):
+        $ai=$pdo->query("SELECT * FROM `users` WHERE id='{$s['addressee_id']}'")->fetch();?>
+      <div class="col-6 col-md-3 mb-3 text-center request-item">
+        <img src="img/<?=htmlspecialchars($ai['header'])?>" class="request-avatar mb-1" style="width:64px;height:64px">
+        <div class="request-username small font-weight-bold mb-1"><?=htmlspecialchars($ai['username'])?></div>
+        <button class="cancel-request-button btn btn-outline-danger btn-sm" onclick="setFriend('cancel',<?=$ai['id']?>)">取消申請</button>
+      </div>
+      <?php endforeach;?>
+    </div></div>
+  </div>
 </div>
 
 <script>
-function setFriend(action,friend_id){
- $.get("./api/set_friend.php",{action,friend_id},function(res){
-    if(res.success){
-        alert(res.message)
-        loadpage(`./front/friends-page.php`);
-    }else{
-        alert("操作失敗")
-    }
- })
+$(".search-submit-button").on("click",function(){
+  $.get("api/search_users.php",{search:$(".search-input").val()},function(r){$(".search-result-list").html(r);});
+});
+function setFriend(action,fid){
+  $.get("api/set_friend.php",{action,friend_id:fid},function(r){
+    if(r.success){alert(r.message);loadpage('front/friends-page.php');}
+    else alert("操作失敗");
+  });
 }
 </script>

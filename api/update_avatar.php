@@ -1,27 +1,9 @@
-<?php
-    include "db.php";
-    $img=$_POST['imgString'];
-    $user=$_SESSION['user'];
-    $source=explode(",",$img);
-    $imgData=base64_decode($source[1]);
-    if(strpos($source[0],'jpeg')!==false){
-        $ext=".jpg";
-    }elseif(strpos($source[0],'png')!==false){
-        $ext=".png";
-    }elseif(strpos($source[0],'gif')!==false){
-        $ext=".gif";
-    }else{
-        $ext=".jpg";
-    }
-    $sourceImg=$pdo->query("SELECT `header` FROM `users` WHERE `username`='$user'")->fetchColumn();
-    if(strlen($sourceImg)>0){
-        unlink("../img/".$sourceImg);
-    }
-    $filepath='../img/'.$user.$ext;
-    $filename=$user.$ext;
-    if(file_put_contents($filepath,$imgData)){
-        echo 1;
-        $pdo->query("UPDATE `users` SET `header`='$filename' WHERE `username`='$user'");
-    }else{
-        echo 0;
-    }
+<?php include "db.php";
+$src=explode(",",$_POST['imgString']);
+$ext=strpos($src[0],'png')!==false?'.png':(strpos($src[0],'gif')!==false?'.gif':'.jpg');
+$user=$_SESSION['user'];
+$old=$pdo->query("SELECT `header` FROM `users` WHERE `username`='$user'")->fetchColumn();
+if($old) @unlink("../img/$old");
+$filename=$user.$ext;
+echo file_put_contents("../img/$filename",base64_decode($src[1]))?1:0;
+if(1) $pdo->exec("UPDATE `users` SET `header`='$filename' WHERE `username`='$user'");

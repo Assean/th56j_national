@@ -1,7 +1,4 @@
 <?php include_once "db.php";
-$title=$_POST['title'];
-$content=$_POST['content'];
-$user=$pdo->query("SELECT * FROM `users` WHERE `username`='{$_SESSION['user']}'")->fetch();
-$pdo->exec("INSERT INTO `articles` (`title`,`content`,`user_id`) 
-                      VALUES('{$title}','{$content}','{$user['id']}')");
+$uid=$pdo->query("SELECT `id` FROM `users` WHERE `username`='{$_SESSION['user']}'")->fetchColumn();
+$pdo->exec("INSERT INTO `articles`(`title`,`content`,`user_id`)VALUES('{$_POST['title']}','{$_POST['content']}','$uid')");
 echo $pdo->lastInsertId();
