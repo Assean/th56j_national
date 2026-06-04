@@ -1,44 +1,43 @@
-<?php include_once "api/db.php"; ?>
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>FunTech</title>
-        <link rel="stylesheet" href="./assets/css/bootstrap.css">
-        <script src="assets/js/jquery-3.7.1.min.js"></script>
-        <script src="assets/js/index.js"></script>              
-</head>
-<body>
-<div id="home" class='container'>
-    <header class="site-header d-flex p-3 justify-content-between border-bottom">
-        <div class="brand" style='border:1px solid #ccc;width:30px;height:30px;background:green'>
-            <a href="./index.php" class="brand-link">
-                <img src="./assets/img/logo.png" alt="FunTech" style='width:100%;height:100%;object-fit:cover'>
-            </a>
+<?php
+include_once "api/db.php";
+$base = "./";
+include_once "partials/header.php";
+$tab = $_GET['tab'] ?? 'articles';
+?>
+<nav id="content-tabs" class="d-flex justify-content-center mb-3">
+    <a href="index.php?tab=articles" class="btn btn-outline-info mx-2 <?= $tab==='articles'?'active':'' ?>">文章</a>
+    <a href="index.php?tab=notifications" class="btn btn-outline-info mx-2 <?= $tab==='notifications'?'active':'' ?>">公告</a>
+</nav>
+<?php if ($tab === 'articles'): ?>
+<section class="articles p-3 rounded my-3">
+    <h1 class="d-flex justify-content-center mb-4 mt-3">文章列表</h1>
+    <?php
+    $articles = $pdo->query("SELECT a.*,u.username FROM `articles` a LEFT JOIN `users` u ON a.user_id=u.id ORDER BY a.created_at DESC LIMIT 10")->fetchAll();
+    if ($articles): foreach ($articles as $a): ?>
+    <article class="article-item w-100 border rounded p-3 my-2">
+        <div class="d-flex justify-content-between">
+            <div class="article-title text-md bolder"><?= htmlspecialchars($a['title']) ?></div>
+            <time class="article-date text-sm"><?= date("Y-m-d H:i:s", strtotime($a['created_at'])) ?></time>
         </div>
-        <nav class="main-nav">
-            <a href="javascript:loadpage('./front/Home-main.php')" class="btn btn-info mx-2 home-link">首頁</a>
-            <a href="javascript:loadpage('./front/games.php')" class="btn btn-info mx-2 games-link">遊戲</a>
-            <a href="javascript:loadpage('./front/friends-page.php')" class="btn btn-info mx-2 friends-link">好友</a>
-        </nav>
-        <?php if (!isset($_SESSION['user'])) { ?>
-            <div class="user-area">
-                <a href="javascript:loadpage('./front/login.php')" class="btn btn-primary mx-2 login-link">登入</a>
-                <a href="javascript:loadpage('./front/register.php')" class="btn btn-success mx-2 register-link">註冊</a>
-            </div>
-        <?php } else { ?>
-            <div class="user-badge">
-                <a href="javascript:loadpage('./front/profile-page.php')" class="btn btn-success mx-2 profile-link">個人頁面入口</a>
-                <a href="./api/logout.php" class="btn btn-success mx-2 logout-link">登出</a>
-            </div>
-        <?php } ?>
-    </header>
-    <div id="content" class="p-2"></div>
-</div>
-<script src="assets/js/bootstrap.js"></script>
-<script>
-    loadpage("./front/Home-main.php");
-</script>
-</body>
-</html>
+        <div class="article-excerpt"><?= htmlspecialchars(mb_substr($a['content'], 0, 50)) ?>...</div>
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">by <?= htmlspecialchars($a['username'] ?? '未知作者') ?></small>
+            <a href="article.php?id=<?= $a['id'] ?>" class="article-readmore btn btn-outline-primary btn-sm">More</a>
+        </div>
+    </article>
+    <?php endforeach; else: ?>
+    <div class="text-center text-muted p-4">目前尚無文章</div>
+    <?php endif; ?>
+</section>
+<?php else: ?>
+<aside class="notifications border m-3 p-3 rounded">
+    <h1 class="d-flex justify-content-center">公告事項</h1>
+    <?php for ($i=1; $i<6; $i++): ?>
+    <div class="notification-item border-bottom my-1 bg-gray-100 p-2 rounded">
+        <div class="notification-title text-lg p-2 m-2">公告事項：<?= $i ?></div>
+        <time class="notification-date"><?= date("Y-m-d H:i:s") ?></time>
+    </div>
+    <?php endfor; ?>
+</aside>
+<?php endif; ?>
+<?php include_once "partials/footer.php"; ?>
