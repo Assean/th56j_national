@@ -62,7 +62,7 @@ FunTech 平台需重新設計版面與功能架構，共分為以下五個項目
 |---|---------|-------------|------|
 | 3.1 | 個人頁面根容器 | `#profile-page` | ✅ |
 | 3.2.1 | 使用者資訊區塊 | `section.profile-header` | ✅ |
-| 3.2.2.1 | 使用者頭像 | `.profile-header img.profile-avatar` | ⚠️ class 誤植為 `profile-avater` |
+| 3.2.2.1 | 使用者頭像 | `.profile-header img.profile-avatar` | ⚠️ class 誤植為 `profile-avater`(✅已修正) |
 | 3.2.2.2 | 使用者名稱 | `.profile-header .profile-username` | ✅ |
 | 3.2.2.3 | 簡介文字（無則顯示「尚未填寫自我介紹」） | `.profile-header .profile-bio` | ✅ |
 | 3.2.3 | 點擊頭像觸發上傳 → 更新頭像 → 即時顯示 | — | ✅ |
