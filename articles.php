@@ -1,7 +1,4 @@
-<?php
-session_start();
-include_once "api/db.php";
-?>
+<?php include_once "api/db.php"; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,12 +11,21 @@ include_once "api/db.php";
     <script src="assets/js/bootstrap.js"></script>
 </head>
 <body>
+    <?php include_once "inc/header.php" ?>
+    <?php
+        $id = $_GET['id'];
+        $article = $pdo->query("SELECT * FROM `articles` WHERE `id` = {$id}")->fetch();
+    ?>
     <div id="acticle">
-        <header class="acticle-header">
-            <h1 class="acticle-title">文章標題</h1>
-            <time datetime="" class="acricle-date">文章發布日期</time>
+        <header class="acticle-header m-5">
+            <h1 class="acticle-title d-flex justify-content-center border"><?= $article['article_title']; ?></h1>
+            <time datetime="<?= $article['article_date']; ?>" class="acricle-date d-flex justify-content-end">
+                <?= $article['article_date']; ?>
+            </time>
         </header>
-        <section class="article-body"></section>
+        <section class="article-body text-break border m-5 p-4">
+            <?= $article['article_content']; ?>
+        </section>
     </div>
 </body>
 </html>
