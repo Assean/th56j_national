@@ -16,12 +16,12 @@ $tab = $_GET['tab'] ?? 'articles';
     if ($articles): foreach ($articles as $a): ?>
     <article class="article-item w-100 border rounded p-3 my-2">
         <div class="d-flex justify-content-between">
-            <div class="article-title text-md bolder"><?= htmlspecialchars($a['title']) ?></div>
+            <div class="article-title text-md bolder"><?= $a['title'] ?></div>
             <time class="article-date text-sm"><?= date("Y-m-d H:i:s", strtotime($a['created_at'])) ?></time>
         </div>
-        <div class="article-excerpt"><?= htmlspecialchars(mb_substr($a['content'], 0, 50)) ?>...</div>
+        <div class="article-excerpt"><?= mb_substr($a['content'], 0, 50) ?>...</div>
         <div class="d-flex justify-content-between align-items-center">
-            <small class="text-muted">by <?= htmlspecialchars($a['username'] ?? '未知作者') ?></small>
+            <small class="text-muted">by <?= $a['username'] ?></small>
             <a href="article.php?id=<?= $a['id'] ?>" class="article-readmore btn btn-outline-primary btn-sm">More</a>
         </div>
     </article>
