@@ -19,6 +19,13 @@
                 <img src="" alt="" class="profile-avatar">
                 <input type="file">
             </div>
+            <div>
+                <label style="cursor:pointer">
+                <img id="p" alt="點擊上傳圖片" style="width:150px;height:150px;object-fit:cover;background:#eee;display:block;text-align:center;line-height:150px;font-size:14px;color:#666">
+                <input type="file" accept="image/*" style="display:none" onchange="$('#p').attr('src',URL.createObjectURL(this.files))">
+                </label>
+            </div>
+            
             <div class="profile-username"></div>
             <div class="profile-bio"></div>
             <textarea name="" id="" class="profile-bio-input"></textarea>
