@@ -1,7 +1,4 @@
 <?php include_once "api/db.php"; ?>
-<?php
-if(!isset($_SESSION['user'])){
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,6 +47,3 @@ if(!isset($_SESSION['user'])){
     </div>
 </body>
 </html>
-<?php }else{
-    header("location:./index.php");
- } ?>

@@ -24,11 +24,11 @@
         </div>
         <div class="password d-flex justify-content-center m-4">
             <label for="password" class="m-2">密碼</label>
-            <input type="text" class="password-input w-25 form-control" name="password">
+            <input type="password" class="password-input w-25 form-control" name="password">
         </div>
         <div class="chack_password d-flex justify-content-center m-4">
             <label for="chack_password" class="m-2">確認密碼</label>
-            <input type="text" class="chack_password-input w-25 form-control" name="chack_password">
+            <input type="password" class="chack_password-input w-25 form-control" name="check_password">
         </div>
         <div class="submit d-flex justify-content-center m-4">
             <!-- <label for="sub送出t">送出</label> -->
