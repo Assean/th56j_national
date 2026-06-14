@@ -12,7 +12,7 @@
 </head>
 <body>
     <?php include_once "./inc/header.php"; ?>
-    <form action="./api/login.php" class="login-form m-5">
+    <form action="./api/login.php" class="login-form m-5" method="post">
         <h2 class="login d-flex justify-content-center m-4">會員登入</h2>
         <div class="username d-flex justify-content-center m-4">
             <label for="username" class="m-2">帳號</label>
@@ -23,7 +23,6 @@
             <input type="password" class="password-input w-25 form-control" name="password">
         </div>
         <div class="submit d-flex justify-content-center m-4">
-            <!-- <label for="sub送出t">送出</label> -->
             <input type="submit" class="submit-input btn btn-warning w-25" name="submit" vaule="送出">
         </div>
     </form>

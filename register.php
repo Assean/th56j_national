@@ -12,7 +12,7 @@
 </head>
 <body>
     <?php include_once "./inc/header.php"; ?>
-    <form action="./api/login.php" class="login-form m-5">
+    <form action="./api/register.php" class="login-form m-5" method="post">
         <h2 class="login d-flex justify-content-center m-4">會員註冊</h2>
         <div class="username d-flex justify-content-center m-4">
             <label for="username" class="m-2">帳號</label>
@@ -23,17 +23,18 @@
             <input type="email" class="email-input w-25 form-control" name="email">
         </div>
         <div class="password d-flex justify-content-center m-4">
-            <label for="password" class="m-2">電子郵件</label>
-            <input type="password" class="password-input w-25 form-control" name="password">
+            <label for="password" class="m-2">密碼</label>
+            <input type="text" class="password-input w-25 form-control" name="password">
         </div>
         <div class="chack_password d-flex justify-content-center m-4">
-            <label for="chack_password" class="m-2">電子郵件</label>
-            <input type="chack_password" class="chack_password-input w-25 form-control" name="chack_password">
+            <label for="chack_password" class="m-2">確認密碼</label>
+            <input type="text" class="chack_password-input w-25 form-control" name="chack_password">
         </div>
         <div class="submit d-flex justify-content-center m-4">
             <!-- <label for="sub送出t">送出</label> -->
             <input type="submit" class="submit-input btn btn-warning w-25" name="submit" vaule="送出">
         </div>
     </form>
+    <!-- <form action="" method="post"></form> -->
 </body>
 </html>

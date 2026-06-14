@@ -16,10 +16,10 @@
         $id = $_GET['id'];
         $article = $pdo->query("SELECT * FROM `articles` WHERE `id` = {$id}")->fetch();
     ?>
-    <div id="acticle">
-        <header class="acticle-header m-5">
-            <h1 class="acticle-title d-flex justify-content-center border"><?= $article['article_title']; ?></h1>
-            <time datetime="<?= $article['article_date']; ?>" class="acricle-date d-flex justify-content-end">
+    <div id="article">
+        <header class="article-header m-5">
+            <h1 class="article-title d-flex justify-content-center border"><?= $article['article_title']; ?></h1>
+            <time datetime="<?= $article['article_date']; ?>" class="article-date d-flex justify-content-end">
                 <?= $article['article_date']; ?>
             </time>
         </header>
