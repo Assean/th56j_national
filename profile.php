@@ -19,7 +19,7 @@ $user = $pdo->query("SELECT avatar FROM users WHERE id = $user_id")->fetch();
         <?php include_once "./inc/header.php"; ?>
         <section class="profile-header">
             <h2>個人頁面入口</h2>
-
+            
             <!-- img -->
             <img id="avatar" src="assets/img/profile/<?= $user['avatar'] ?? 'default.jpg' ?>" class="rounded-circle object-fit-cover" width="150" height="150" onclick="$('#avatar-input').click()">
             <input type="file" accept="image/*" class="d-none" id="avatar-input">
