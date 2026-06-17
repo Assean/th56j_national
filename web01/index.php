@@ -8,18 +8,18 @@
 <body>
     <div id="home">
         <?php include_once "inc/header.php"; ?>
-        <section class="articles">
+        <section class="articles m-5">
             <article class="article-item">
-                <div class="article-title">文章標題:</div>
-                <time datetime="" class="article-date">發布日期:</time>
-                <div class="article-excerpt">文章摘要:</div>
-                <a href="article?id=" class="article-readmore">閱讀更多</a>
+                <div class="article-title">文章標題:123</div>
+                <time datetime="" class="article-date">發布日期:2026/06/17</time>
+                <div class="article-excerpt">文章摘要:這是123...</div>
+                <a href="article?id=" class="article-readmore d-flex justify-content-end">閱讀更多</a>
             </article>
         </section>
         <aside class="notifications">
             <div class="notifications-item">
-                <div class="notifications-titile"></div>
-                <time datetime="" class="notifications-date"></time>
+                <div class="notifications-titile">通知標題</div>
+                <time datetime="" class="notifications-date">發布日期</time>
             </div>
         </aside>
     </div>
