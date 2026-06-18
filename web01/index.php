@@ -9,12 +9,17 @@
     <div id="home">
         <?php include_once "inc/header.php"; ?>
         <section class="articles m-5">
-            <article class="article-item">
-                <div class="article-title">文章標題:123</div>
-                <time datetime="" class="article-date">發布日期:2026/06/17</time>
-                <div class="article-excerpt">文章摘要:這是123...</div>
-                <a href="article?id=" class="article-readmore d-flex justify-content-end">閱讀更多</a>
-            </article>
+            <?php 
+            $articles = $pdo->query("SELECT * FROM `articles`")->fetchAll();
+            foreach($articles as $article){
+                ?>
+                <article class="article-item border m-3 p-2">
+                    <div class="article-title">文章標題:<?=$article['title']?></div>
+                    <time datetime="" class="article-date">發布日期:<?=$article['created_at']?></time>
+                    <div class="article-excerpt">文章摘要:<?=mb_strimwidth($article['content'],0,50,'...')?></div>
+                    <a href="article.php?id=<?=$article['id']?>" class="article-readmore d-flex justify-content-end">閱讀更多</a>
+                </article>
+            <?php } ?>
         </section>
         <aside class="notifications">
             <div class="notifications-item">
